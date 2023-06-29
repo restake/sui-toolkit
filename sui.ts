@@ -1,7 +1,6 @@
 import {
     Connection,
     DelegatedStake,
-    Ed25519Keypair,
     JsonRpcProvider,
     RawSigner,
     SUI_SYSTEM_STATE_OBJECT_ID,
@@ -9,19 +8,14 @@ import {
 } from "@mysten/sui.js";
 
 import config from "./config.ts";
-import { getDecodedKeypair } from "./utils.ts";
 
-const provider = new JsonRpcProvider(
+export const provider = new JsonRpcProvider(
     new Connection({
         fullnode: config.SUI_RPC_URL,
     }),
 );
 
-// TODO: use keypair that was fetched from Vault.
-const keypair = Ed25519Keypair.fromSecretKey(getDecodedKeypair(""));
-const signer = new RawSigner(keypair, provider);
-
-export const getSelfStake = async (): Promise<DelegatedStake[]> => {
+const getSelfStake = async (): Promise<DelegatedStake[]> => {
     const stakes = await provider.getStakes({
         owner: config.SUI_VALIDATOR_ADDRESS,
     });
@@ -30,10 +24,10 @@ export const getSelfStake = async (): Promise<DelegatedStake[]> => {
     return stakes.filter((stake) => stake.validatorAddress === config.SUI_VALIDATOR_ADDRESS);
 };
 
-export const withdrawStakeObjects = async (): Promise<void> => {
+export const withdrawStakeObjects = async (signer: RawSigner): Promise<void> => {
     // TODO: can be improved.
     const selfStake = (await getSelfStake()).find((stake) => stake.validatorAddress === config.SUI_VALIDATOR_ADDRESS)?.stakes || [];
-
+    // Withdraw stake objects, one by one.
     for (const stake of selfStake) {
         const txb = new TransactionBlock();
         // TODO: investigate if we could bundle multiple Move calls into a single transaction block.
@@ -44,7 +38,6 @@ export const withdrawStakeObjects = async (): Promise<void> => {
                 txb.object(stake.stakedSuiId),
             ],
         });
-
         try {
             await signer.signAndExecuteTransactionBlock({
                 transactionBlock: txb,
