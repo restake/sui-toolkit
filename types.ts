@@ -1,4 +1,4 @@
-import { z, ZodType } from "https://deno.land/x/zod@v3.21.4/mod.ts";
+import { z, ZodType } from "zod";
 import { createReadResponse } from "vault";
 
 export function createKVReadResponse<T extends ZodType>(response: T) {
