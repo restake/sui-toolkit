@@ -6,6 +6,7 @@
     "imports": {
         "vault": "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/mod.ts",
         "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
+        "@mysten/sui.js": "npm:@mysten/sui.js@0.36.0",
         "$std/": "https://deno.land/std@0.188.0/"
     }
 }

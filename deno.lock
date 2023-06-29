@@ -14,26 +14,12 @@
     "https://deno.land/x/zod@v3.21.4/locales/en.ts": "a7a25cd23563ccb5e0eed214d9b31846305ddbcdb9c5c8f508b108943366ab4c",
     "https://deno.land/x/zod@v3.21.4/mod.ts": "64e55237cb4410e17d968cd08975566059f27638ebb0b86048031b987ba251c4",
     "https://deno.land/x/zod@v3.21.4/types.ts": "b5d061babea250de14fc63764df5b3afa24f2b088a1d797fc060ba49a0ddff28",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/auth.ts": "eaae66647d05d8d146d1210667c0a361b7620c4a7dd6b39ac79c23473df664c2",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/client.ts": "30fe0688afe349938555ecb83c48ef7d2c0dd70beeeeb3c8a0bd926dfe31f52d",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/deps.ts": "456c7c7cbdbf44829722dab48d0740d408f1de89bb5d23a6b36a281303cd8eda",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/http.ts": "010bb877f13b739f24a770a766e5204de20c94fcf5e796f8d17744d6648d11a5",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/mod.ts": "514be0bfef9a8d6b39b519aab5e3945f8bec40283c8441a608eac86720b86857",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/types.ts": "bf42f3e5b280aabaebbc6d66d42946d0db5f17aa9f98894da9c95f26025acb54",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/752baf1f09e531a26b215b7022115ea1e4c12a7b/vault.ts": "016f5898481aefa703cb379ff90f738aba21bf55ba1e768b193857fe3df71c73",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/auth.ts": "eaae66647d05d8d146d1210667c0a361b7620c4a7dd6b39ac79c23473df664c2",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/client.ts": "67fb0e3ee68d034aaf55b1af2b9fb577e5a28b3f1bd37afac71dda60406cacbd",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/deps.ts": "456c7c7cbdbf44829722dab48d0740d408f1de89bb5d23a6b36a281303cd8eda",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/http.ts": "010bb877f13b739f24a770a766e5204de20c94fcf5e796f8d17744d6648d11a5",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/mod.ts": "514be0bfef9a8d6b39b519aab5e3945f8bec40283c8441a608eac86720b86857",
     "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/types.ts": "26e0cbb164fbe9e9108aad88b7b5c3d0d4691c88cfcd5d1d150f51910b8cf600",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/vault.ts": "016f5898481aefa703cb379ff90f738aba21bf55ba1e768b193857fe3df71c73",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/auth.ts": "eaae66647d05d8d146d1210667c0a361b7620c4a7dd6b39ac79c23473df664c2",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/client.ts": "30fe0688afe349938555ecb83c48ef7d2c0dd70beeeeb3c8a0bd926dfe31f52d",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/deps.ts": "456c7c7cbdbf44829722dab48d0740d408f1de89bb5d23a6b36a281303cd8eda",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/http.ts": "010bb877f13b739f24a770a766e5204de20c94fcf5e796f8d17744d6648d11a5",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/mod.ts": "514be0bfef9a8d6b39b519aab5e3945f8bec40283c8441a608eac86720b86857",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/types.ts": "26e0cbb164fbe9e9108aad88b7b5c3d0d4691c88cfcd5d1d150f51910b8cf600",
-    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/f03b2d4308befaadd2be577420aaf6effecbd604/vault.ts": "016f5898481aefa703cb379ff90f738aba21bf55ba1e768b193857fe3df71c73"
+    "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/vault.ts": "016f5898481aefa703cb379ff90f738aba21bf55ba1e768b193857fe3df71c73"
   }
 }
