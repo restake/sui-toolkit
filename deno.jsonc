@@ -1,0 +1,11 @@
+{
+    "fmt": {
+        "lineWidth": 140,
+        "indentWidth": 4
+    },
+    "imports": {
+        "vault": "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/9585febda23761407c28a7b56eb5d0fde86b86d0/mod.ts",
+        "zod": "https://deno.land/x/zod@v3.21.4/mod.ts",
+        "$std/": "https://deno.land/std@0.188.0/"
+    }
+}
