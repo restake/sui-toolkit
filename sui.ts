@@ -1,11 +1,4 @@
-import {
-    Connection,
-    DelegatedStake,
-    JsonRpcProvider,
-    RawSigner,
-    SUI_SYSTEM_STATE_OBJECT_ID,
-    TransactionBlock,
-} from "@mysten/sui.js";
+import { Connection, DelegatedStake, JsonRpcProvider, RawSigner, SUI_SYSTEM_STATE_OBJECT_ID, TransactionBlock } from "@mysten/sui.js";
 
 import config from "./config.ts";
 

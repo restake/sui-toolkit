@@ -1,5 +1,5 @@
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.1/command/mod.ts";
-import { Input, Select, prompt } from "https://deno.land/x/cliffy@v1.0.0-rc.1/prompt/mod.ts";
+import { Input, prompt, Select } from "https://deno.land/x/cliffy@v1.0.0-rc.1/prompt/mod.ts";
 
 let withdrawerPrompt: {
     provider: string;
@@ -20,7 +20,7 @@ await new Command()
                 message: "Select validator key provider",
                 options: [
                     { name: "HashiCorp Vault", value: "vault" },
-                    { name: "Plain-text base64 encoded keypair" , value: "plain-text" },
+                    { name: "Plain-text base64 encoded keypair", value: "plain-text" },
                 ],
             },
             {
@@ -37,15 +37,15 @@ await new Command()
                     if (provider === "vault") {
                         await next();
                     } else {
-                        await next("keypair")
+                        await next("keypair");
                     }
-                }
+                },
             },
             {
                 name: "key",
                 type: Input,
                 message: "Enter the key name in Vault",
-                default: "account_key"
+                default: "account_key",
             },
             {
                 name: "keypair",
@@ -55,8 +55,8 @@ await new Command()
                     if (provider === "plain-text") {
                         await next();
                     }
-                }
-            }
+                },
+            },
         ]);
     })
     .parse(Deno.args);

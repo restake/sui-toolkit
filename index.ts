@@ -10,7 +10,7 @@ import { provider } from "./sui.ts";
 await client.login();
 
 const suiKeyData = z.object({
-    account_key: z.string()
+    account_key: z.string(),
 });
 
 const keyData = await client.read(createKVReadResponse(suiKeyData), config.SUI_WITHDRAWER_KEYS_PATH);
