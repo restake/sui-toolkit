@@ -28,10 +28,7 @@ await new Command()
                 type: Input,
                 message: "Enter Vault path to keypair",
                 validate: (value) => {
-                    if (value.length < 1) {
-                        return "Path must not be empty";
-                    }
-                    return true;
+                    return value.length > 0 || "Path must not be empty";
                 },
                 before: async ({ provider }, next) => {
                     if (provider === "vault") {
