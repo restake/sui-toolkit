@@ -1,10 +1,10 @@
-import { z, ZodType } from "zod";
-import { createReadResponse } from "vault";
+import { z } from "zod";
+import { DelegatedStake } from "@mysten/sui.js";
 
-export function createKVReadResponse<T extends ZodType>(response: T) {
-    return createReadResponse(z.object({
-        data: response,
-    }));
+export function createKeySchema(key: string) {
+    return z.object({
+        [key]: z.string(),
+    });
 }
 
-export type KVReadResponse<T extends ZodType> = z.infer<ReturnType<typeof createKVReadResponse<T>>>;
+export type Stake = DelegatedStake["stakes"][number];
