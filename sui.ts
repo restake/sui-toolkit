@@ -1,4 +1,5 @@
 import {
+    CoinStruct,
     Connection,
     JsonRpcProvider,
     RawSigner,
@@ -17,7 +18,7 @@ export const provider = new JsonRpcProvider(
     }),
 );
 
-export const getSelfStakes = async (): Promise<Stake[]> => {
+const getSelfStakes = async (): Promise<Stake[]> => {
     const stakes = await provider.getStakes({
         owner: config.SUI_VALIDATOR_ADDRESS,
     });
@@ -25,11 +26,30 @@ export const getSelfStakes = async (): Promise<Stake[]> => {
     return stakes.find((stake) => stake.validatorAddress === config.SUI_VALIDATOR_ADDRESS)?.stakes || [];
 };
 
-export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
-    const transactions: SuiTransactionBlockResponse[] = [];
-    const selfStake = await getSelfStakes();
+export const getOwnedSuiCoins = async (): Promise<CoinStruct[]> => {
+    let hasNextPage = true;
+    let cursor: string | undefined | null = null;
 
-    for (const stake of selfStake) {
+    const coins: CoinStruct[] = [];
+    while (hasNextPage) {
+        const coinsResponse = await provider.getCoins({
+            owner: config.SUI_VALIDATOR_ADDRESS,
+            coinType: "0x2::sui::SUI",
+            cursor,
+        });
+        cursor = coinsResponse.nextCursor;
+        hasNextPage = coinsResponse.hasNextPage;
+        coins.push(...coinsResponse.data);
+    }
+
+    return coins;
+};
+
+export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
+    const stakes = await getSelfStakes();
+    const transactions: SuiTransactionBlockResponse[] = [];
+
+    for (const stake of stakes) {
         const txb = new TransactionBlock();
         txb.moveCall({
             target: "0x3::sui_system::request_withdraw_stake",
@@ -53,10 +73,6 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
     }
 
     return transactions;
-};
-
-export const mergeSuiObjects = () => {
-    //
 };
 
 export const sendSuiObjects = () => {
