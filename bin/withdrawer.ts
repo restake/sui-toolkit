@@ -1,5 +1,5 @@
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.1/command/mod.ts";
-import { Input, prompt, Secret, Select } from "https://deno.land/x/cliffy@v1.0.0-rc.1/prompt/mod.ts";
+import { Confirm, Input, prompt, Secret, Select } from "https://deno.land/x/cliffy@v1.0.0-rc.1/prompt/mod.ts";
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
@@ -82,6 +82,19 @@ const getPrompt = (): any => {
             before: async ({ provider }, next) => {
                 if (provider === "plain-text") {
                     await next();
+                }
+            },
+        },
+        {
+            name: "confirmation",
+            type: Confirm,
+            message: `You're about to withdraw all staked Sui objects. Proceed?`,
+            after: async ({ confirmation }, next) => {
+                if (confirmation) {
+                    await next();
+                } else {
+                    // Reset the prompt...
+                    await next("provider");
                 }
             },
         },
