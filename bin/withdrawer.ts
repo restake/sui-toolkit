@@ -3,7 +3,7 @@ import { Input, prompt, Secret, Select } from "https://deno.land/x/cliffy@v1.0.0
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { provider, withdrawStakeObjects } from "../sui.ts";
+import { provider, sendSuiObjects, withdrawStakeObjects } from "../sui.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
@@ -12,9 +12,9 @@ type Prompt = {
     keypair: string | undefined;
 };
 
-type SendPrompt = Prompt & {
-    amount: number | undefined;
-    recipient: string | undefined;
+export type SendPrompt = Prompt & {
+    amount: number;
+    recipient: string;
 };
 
 let withdrawPrompt: Prompt;
@@ -39,8 +39,9 @@ const withdraw = async () => {
 };
 
 const send = async () => {
-    // const signer = await getSigner(sendPrompt);
-    // TODO: actually send the Sui
+    const signer = await getSigner(sendPrompt);
+    const tx = await sendSuiObjects(signer, sendPrompt);
+    console.log(tx);
 };
 
 // deno-lint-ignore no-explicit-any
