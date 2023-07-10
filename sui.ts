@@ -11,6 +11,7 @@ import { delay } from "$std/async/delay.ts";
 
 import config from "./config.ts";
 import { Stake } from "./types.ts";
+import { SendPrompt } from "./bin/withdrawer.ts";
 
 export const provider = new JsonRpcProvider(
     new Connection({
@@ -65,7 +66,7 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
             });
             console.log(tx);
             // We wait 2.5 seconds to allow the network process consecutive transactions.
-            await delay(2500);
+            await delay(3000);
         } catch (e) {
             throw new Error(`Failed to withdraw stake ${stake.stakedSuiId}: ${e}`);
         }
@@ -75,6 +76,19 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
     return transactions;
 };
 
-export const sendSuiObjects = () => {
-    //
+export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
+    let tx: SuiTransactionBlockResponse;
+    const txb = new TransactionBlock();
+
+    const coin = txb.splitCoins(txb.gas, [txb.pure(amount * 1e9)]);
+    txb.transferObjects([coin], txb.pure(recipient));
+    try {
+        tx = await signer.signAndExecuteTransactionBlock({
+            transactionBlock: txb,
+        });
+    } catch (e) {
+        throw new Error(`Failed to send ${amount} SUI to ${recipient}: ${e}`);
+    }
+
+    return tx;
 };
