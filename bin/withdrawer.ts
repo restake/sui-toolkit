@@ -5,72 +5,103 @@ import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
 import { provider, withdrawStakeObjects } from "../sui.ts";
 
-let withdrawerPrompt: {
+type Prompt = {
     provider: "vault" | "plain-text";
     path: string | undefined;
     key: string | undefined;
     keypair: string | undefined;
 };
 
-const withdraw = async () => {
+type SendPrompt = Prompt & {
+    amount: number | undefined;
+    recipient: string | undefined;
+};
+
+let withdrawPrompt: Prompt;
+let sendPrompt: SendPrompt;
+
+const getSigner = async (prompt: Prompt | SendPrompt): Promise<RawSigner> => {
     let keypair: Ed25519Keypair;
 
-    if (withdrawerPrompt.provider === "vault") {
-        keypair = await getKeypair(withdrawerPrompt.path!, withdrawerPrompt.key!);
+    if (prompt.provider === "vault") {
+        keypair = await getKeypair(prompt.path!, prompt.key!);
     } else {
-        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(withdrawerPrompt.keypair!));
+        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!));
     }
 
-    const signer = new RawSigner(keypair, provider);
+    return new RawSigner(keypair, provider);
+};
+
+const withdraw = async () => {
+    const signer = await getSigner(withdrawPrompt);
     const tx = await withdrawStakeObjects(signer);
     console.log(tx);
+};
+
+const send = async () => {
+    // const signer = await getSigner(sendPrompt);
+    // TODO: actually send the Sui
+};
+
+// deno-lint-ignore no-explicit-any
+const getPrompt = (): any => {
+    return prompt([
+        {
+            name: "provider",
+            type: Select,
+            message: "Select validator key provider",
+            options: [
+                { name: "HashiCorp Vault", value: "vault" },
+                { name: "Plain-text base64 encoded keypair", value: "plain-text" },
+            ],
+        },
+        {
+            name: "path",
+            type: Input,
+            message: "Enter Vault path to keypair",
+            validate: (value) => value.length > 0 || "Path must not be empty",
+            before: async ({ provider }, next) => {
+                if (provider === "vault") {
+                    await next();
+                } else {
+                    await next("keypair");
+                }
+            },
+        },
+        {
+            name: "key",
+            type: Input,
+            message: "Enter the key name in Vault",
+            default: "account_key",
+        },
+        {
+            name: "keypair",
+            type: Secret,
+            message: "Enter base64 encoded keypair",
+            before: async ({ provider }, next) => {
+                if (provider === "plain-text") {
+                    await next();
+                }
+            },
+        },
+    ]);
 };
 
 await new Command()
     .name("sui-withdrawer")
     .description("Easily withdraw Sui validator rewards")
     .version("v0.0.1")
+    .command("withdraw", "Withdraw all staked Sui objects")
     .action(async () => {
-        withdrawerPrompt = await prompt([
-            {
-                name: "provider",
-                type: Select,
-                message: "Select validator key provider",
-                options: [
-                    { name: "HashiCorp Vault", value: "vault" },
-                    { name: "Plain-text base64 encoded keypair", value: "plain-text" },
-                ],
-            },
-            {
-                name: "path",
-                type: Input,
-                message: "Enter Vault path to keypair",
-                validate: (value) => value.length > 0 || "Path must not be empty",
-                before: async ({ provider }, next) => {
-                    if (provider === "vault") {
-                        await next();
-                    } else {
-                        await next("keypair");
-                    }
-                },
-            },
-            {
-                name: "key",
-                type: Input,
-                message: "Enter the key name in Vault",
-                default: "account_key",
-            },
-            {
-                name: "keypair",
-                type: Secret,
-                message: "Enter base64 encoded keypair",
-                before: async ({ provider }, next) => {
-                    if (provider === "plain-text") {
-                        await next();
-                    }
-                },
-            },
-        ]);
+        withdrawPrompt = await getPrompt();
         await withdraw();
+    })
+    .command("send", "Send Sui to a given address")
+    .arguments("<amount:number> <recipient:string>")
+    .action(async (_options, amount, recipient) => {
+        sendPrompt = await getPrompt();
+        sendPrompt.amount = amount;
+        sendPrompt.recipient = recipient;
+        await send();
     })
     .parse(Deno.args);
