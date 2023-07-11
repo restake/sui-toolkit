@@ -85,5 +85,4 @@ jobs:
             ghr -t "${GITHUB_TOKEN}" \
               -n "<< pipeline.parameters.version >>" \
               -recreate "<< pipeline.parameters.version >>" \
-              -draft \
               /tmp/binaries
