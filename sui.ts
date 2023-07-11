@@ -27,25 +27,6 @@ const getSelfStakes = async (): Promise<Stake[]> => {
     return stakes.find((stake) => stake.validatorAddress === config.SUI_VALIDATOR_ADDRESS)?.stakes || [];
 };
 
-export const getOwnedSuiCoins = async (): Promise<CoinStruct[]> => {
-    let hasNextPage = true;
-    let cursor: string | undefined | null = null;
-
-    const coins: CoinStruct[] = [];
-    while (hasNextPage) {
-        const coinsResponse = await provider.getCoins({
-            owner: config.SUI_VALIDATOR_ADDRESS,
-            coinType: "0x2::sui::SUI",
-            cursor,
-        });
-        cursor = coinsResponse.nextCursor;
-        hasNextPage = coinsResponse.hasNextPage;
-        coins.push(...coinsResponse.data);
-    }
-
-    return coins;
-};
-
 export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
     const stakes = await getSelfStakes();
     const transactions: SuiTransactionBlockResponse[] = [];
@@ -59,12 +40,13 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
                 txb.object(stake.stakedSuiId),
             ],
         });
-        let tx: SuiTransactionBlockResponse;
+
         try {
-            tx = await signer.signAndExecuteTransactionBlock({
+            const tx = await signer.signAndExecuteTransactionBlock({
                 transactionBlock: txb,
             });
             console.log(tx);
+            transactions.push(tx);
             // We wait 3 seconds to allow the network process consecutive transactions.
             await delay(3000);
         } catch (e) {
@@ -72,20 +54,18 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
                 cause: e,
             });
         }
-        transactions.push(tx);
     }
 
     return transactions;
 };
 
 export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
-    let tx: SuiTransactionBlockResponse;
     const txb = new TransactionBlock();
-
     const coin = txb.splitCoins(txb.gas, [txb.pure(amount * 1e9)]);
     txb.transferObjects([coin], txb.pure(recipient));
+
     try {
-        tx = await signer.signAndExecuteTransactionBlock({
+        return await signer.signAndExecuteTransactionBlock({
             transactionBlock: txb,
         });
     } catch (e) {
@@ -93,6 +73,4 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
             cause: e,
         });
     }
-
-    return tx;
 };
