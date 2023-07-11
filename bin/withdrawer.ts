@@ -1,5 +1,5 @@
-import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.1/command/mod.ts";
-import { Confirm, Input, prompt, Secret, Select } from "https://deno.land/x/cliffy@v1.0.0-rc.1/prompt/mod.ts";
+import { Command } from "cliffy/command/mod.ts";
+import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
