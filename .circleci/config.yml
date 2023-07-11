@@ -80,11 +80,10 @@ jobs:
             rm -rf sui-withdrawer
             sha256sum sui-withdrawer_* > SHA256SUMS
       - run:
-          name: "Publish Github release"
+          name: "Publish Github draft release"
           command: |
             ghr -t "${GITHUB_TOKEN}" \
               -n "<< pipeline.parameters.version >>" \
               -recreate "<< pipeline.parameters.version >>" \
-              -generatenotes \
-              << pipeline.parameters.version >> \
+              -draft \
               /tmp/binaries
