@@ -65,10 +65,12 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
                 transactionBlock: txb,
             });
             console.log(tx);
-            // We wait 2.5 seconds to allow the network process consecutive transactions.
+            // We wait 3 seconds to allow the network process consecutive transactions.
             await delay(3000);
         } catch (e) {
-            throw new Error(`Failed to withdraw stake ${stake.stakedSuiId}: ${e}`);
+            throw new Error(`Failed to withdraw staked Sui object ${stake.stakedSuiId}`, {
+                cause: e
+            });
         }
         transactions.push(tx);
     }
@@ -87,7 +89,9 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
             transactionBlock: txb,
         });
     } catch (e) {
-        throw new Error(`Failed to send ${amount} SUI to ${recipient}: ${e}`);
+        throw new Error(`Failed to send ${amount} SUI to ${recipient}`, {
+            cause: e
+        });
     }
 
     return tx;
