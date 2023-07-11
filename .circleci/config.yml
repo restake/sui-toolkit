@@ -1,0 +1,90 @@
+version: 2.1
+
+orbs:
+  go: "circleci/go@1.7.1"
+
+parameters:
+  version:
+    type: "string"
+    default: "v0.0.1"
+  release:
+    type: "boolean"
+    default: false
+
+workflows:
+  release:
+    when: << pipeline.parameters.release >>
+    jobs:
+      - checkout
+      - build:
+          requires:
+            - checkout
+          matrix:
+            parameters:
+              target:
+                - x86_64-unknown-linux-gnu
+                - x86_64-pc-windows-msvc
+                - x86_64-apple-darwin
+                - aarch64-apple-darwin
+      - publish:
+          context: "github-context"
+          requires:
+            - build
+
+jobs:
+  checkout:
+    docker:
+      - image: "cimg/base:current"
+    steps:
+      - run:
+          name: "Clone the source"
+          command: git clone https://github.com/restake/sui-withdrawer.git sui-withdrawer
+      - persist_to_workspace:
+          root: "."
+          paths:
+            - sui-withdrawer/*
+  build:
+    docker:
+      - image: "denoland/deno:alpine-1.35.0"
+    resource_class: "medium"
+    parameters:
+      target:
+        type: "string"
+    steps:
+      - attach_workspace:
+            at: '/'
+      - run:
+          name: "Build binary"
+          command: |
+            cd /sui-withdrawer
+            deno compile --unstable -A --target << parameters.target >> -o sui-withdrawer_<< parameters.target >> ./bin/withdrawer.ts
+      - persist_to_workspace:
+          root: "/sui-withdrawer"
+          paths:
+            - sui-withdrawer_*
+  publish:
+    executor:
+      name: "go/default"
+      tag: "1.17"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: '/tmp/binaries'
+      - run:
+          name: "Install GHR"
+          command: go get github.com/tcnksm/ghr
+      - run:
+          name: "Create checksums and clean up binaries folder"
+          command: |
+            cd /tmp/binaries
+            rm -rf sui-withdrawer
+            sha256sum sui-withdrawer_* > SHA256SUMS
+      - run:
+          name: "Publish Github release"
+          command: |
+            ghr -t "${GITHUB_TOKEN}" \
+              -n "<< pipeline.parameters.version >>" \
+              -recreate "<< pipeline.parameters.version >>" \
+              -generatenotes \
+              << pipeline.parameters.version >> \
+              /tmp/binaries
