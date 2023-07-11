@@ -12,35 +12,53 @@ type Prompt = {
     keypair: string | undefined;
 };
 
+type VaultPrompt = Prompt & {
+    provider: "vault";
+    path: string;
+    key: string;
+};
+
+type PlaintextPrompt = Prompt & {
+    provider: "plain-text";
+    keypair: string;
+};
+
 export type SendPrompt = Prompt & {
     amount: number;
     recipient: string;
 };
 
-let withdrawPrompt: Prompt;
-let sendPrompt: SendPrompt;
+function isVaultPrompt(p: Prompt): p is VaultPrompt {
+    return p.provider === "vault";
+}
 
-const getSigner = async (prompt: Prompt | SendPrompt): Promise<RawSigner> => {
+function isPlaintextPrompt(p: Prompt): p is PlaintextPrompt {
+    return p.provider === "plain-text";
+}
+
+const getSigner = async (prompt: Prompt): Promise<RawSigner> => {
     let keypair: Ed25519Keypair;
 
-    if (prompt.provider === "vault") {
+    if (isVaultPrompt(prompt)) {
         keypair = await getKeypair(prompt.path!, prompt.key!);
-    } else {
+    } else if (isPlaintextPrompt(prompt)) {
         keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!));
+    } else {
+        throw new Error(`Unsupported provider: ${prompt.provider}`);
     }
 
     return new RawSigner(keypair, provider);
 };
 
-const withdraw = async () => {
-    const signer = await getSigner(withdrawPrompt);
+const withdraw = async (prompt: Prompt) => {
+    const signer = await getSigner(prompt);
     const tx = await withdrawStakeObjects(signer);
     console.log(tx);
 };
 
-const send = async () => {
-    const signer = await getSigner(sendPrompt);
-    const tx = await sendSuiObjects(signer, sendPrompt);
+const send = async (prompt: SendPrompt) => {
+    const signer = await getSigner(prompt);
+    const tx = await sendSuiObjects(signer, prompt);
     console.log(tx);
 };
 
@@ -84,19 +102,6 @@ const getPrompt = <T>(): Promise<T> => {
                 }
             },
         },
-        {
-            name: "confirmation",
-            type: Confirm,
-            message: `You're about to withdraw all staked Sui objects. Proceed?`,
-            after: async ({ confirmation }, next) => {
-                if (confirmation) {
-                    await next();
-                } else {
-                    // Reset the prompt...
-                    await next("provider");
-                }
-            },
-        },
     ]) as unknown as Promise<T>;
 };
 
@@ -104,17 +109,38 @@ await new Command()
     .name("sui-withdrawer")
     .description("Easily withdraw Sui validator rewards")
     .version("v0.0.1")
+    .action(function () {
+        this.showHelp();
+    })
     .command("withdraw", "Withdraw all staked Sui objects")
     .action(async () => {
-        withdrawPrompt = await getPrompt();
-        await withdraw();
+        const withdrawPrompt = await getPrompt<Prompt>();
+        const { confirmation } = await prompt([
+            {
+                name: "confirmation",
+                type: Confirm,
+                message: "You're about to withdraw all staked Sui objects. Proceed?",
+            },
+        ]);
+        if (confirmation) {
+            await withdraw(withdrawPrompt);
+        }
     })
     .command("send", "Send Sui to a given address")
     .arguments("<amount:number> <recipient:string>")
     .action(async (_options, amount, recipient) => {
-        sendPrompt = await getPrompt();
+        const sendPrompt = await getPrompt<SendPrompt>();
         sendPrompt.amount = amount;
         sendPrompt.recipient = recipient;
-        await send();
+        const { confirmation } = await prompt([
+            {
+                name: "confirmation",
+                type: Confirm,
+                message: `You're about to send ${amount} SUI to address ${recipient}. Proceed?`,
+            },
+        ]);
+        if (confirmation) {
+            await send(sendPrompt);
+        }
     })
     .parse(Deno.args);

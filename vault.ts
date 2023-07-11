@@ -23,7 +23,7 @@ export const getKeypair = async (path: string, key: string): Promise<Ed25519Keyp
         await client.login();
     } catch (e) {
         throw new Error("Failed to login to Vault", {
-            cause: e
+            cause: e,
         });
     }
 
@@ -35,7 +35,7 @@ export const getKeypair = async (path: string, key: string): Promise<Ed25519Keyp
         );
     } catch (e) {
         throw new Error("Failed to read keypair from Vault", {
-            cause: e
+            cause: e,
         });
     }
 

@@ -69,7 +69,7 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
             await delay(3000);
         } catch (e) {
             throw new Error(`Failed to withdraw staked Sui object ${stake.stakedSuiId}`, {
-                cause: e
+                cause: e,
             });
         }
         transactions.push(tx);
@@ -90,7 +90,7 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
         });
     } catch (e) {
         throw new Error(`Failed to send ${amount} SUI to ${recipient}`, {
-            cause: e
+            cause: e,
         });
     }
 
