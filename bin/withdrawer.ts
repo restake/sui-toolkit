@@ -44,8 +44,7 @@ const send = async () => {
     console.log(tx);
 };
 
-// deno-lint-ignore no-explicit-any
-const getPrompt = (): any => {
+const getPrompt = <T>(): Promise<T> => {
     return prompt([
         {
             name: "provider",
@@ -98,7 +97,7 @@ const getPrompt = (): any => {
                 }
             },
         },
-    ]);
+    ]) as unknown as Promise<T>;
 };
 
 await new Command()
