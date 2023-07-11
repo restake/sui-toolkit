@@ -1,5 +1,4 @@
 import {
-    CoinStruct,
     Connection,
     JsonRpcProvider,
     RawSigner,
