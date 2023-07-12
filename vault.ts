@@ -17,7 +17,7 @@ const client = new VaultClient({
     authentication,
 });
 
-export const getKeypair = async (path: string, key: string): Promise<Ed25519Keypair> => {
+export const getKeypair = async (path: string, key: string, isBase64Encoded: boolean): Promise<Ed25519Keypair> => {
     // We currently use environment variables for authentication.
     try {
         await client.login();
@@ -40,6 +40,6 @@ export const getKeypair = async (path: string, key: string): Promise<Ed25519Keyp
     }
 
     return Ed25519Keypair.fromSecretKey(
-        decodeKeypair(keyData.data.data[key], true),
+        decodeKeypair(keyData.data.data[key], isBase64Encoded),
     );
 };

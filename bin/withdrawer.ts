@@ -10,6 +10,7 @@ type Prompt = {
     path: string | undefined;
     key: string | undefined;
     keypair: string | undefined;
+    base64: boolean;
 };
 
 type VaultPrompt = Prompt & {
@@ -40,9 +41,9 @@ const getSigner = async (prompt: Prompt): Promise<RawSigner> => {
     let keypair: Ed25519Keypair;
 
     if (isVaultPrompt(prompt)) {
-        keypair = await getKeypair(prompt.path!, prompt.key!);
+        keypair = await getKeypair(prompt.path!, prompt.key!, prompt.base64);
     } else if (isPlaintextPrompt(prompt)) {
-        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!));
+        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!, prompt.base64));
     } else {
         throw new Error(`Unsupported provider: ${prompt.provider}`);
     }
@@ -112,9 +113,13 @@ await new Command()
     .action(function () {
         this.showHelp();
     })
+    .globalOption("-b, --base64", "Used to indicate whether the keypair is double base64 encoded - base64(base64Keypair)", {
+        default: false,
+    })
     .command("withdraw", "Withdraw all staked Sui objects")
-    .action(async () => {
+    .action(async (options) => {
         const withdrawPrompt = await getPrompt<Prompt>();
+        withdrawPrompt.base64 = options.base64;
         const { confirmation } = await prompt([
             {
                 name: "confirmation",
@@ -128,10 +133,11 @@ await new Command()
     })
     .command("send", "Send Sui to a given address")
     .arguments("<amount:number> <recipient:string>")
-    .action(async (_options, amount, recipient) => {
+    .action(async (options, amount, recipient) => {
         const sendPrompt = await getPrompt<SendPrompt>();
         sendPrompt.amount = amount;
         sendPrompt.recipient = recipient;
+        sendPrompt.base64 = options.base64;
         const { confirmation } = await prompt([
             {
                 name: "confirmation",
