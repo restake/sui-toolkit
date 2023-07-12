@@ -57,7 +57,7 @@ jobs:
           name: "Build binary"
           command: |
             cd /sui-toolkit
-            deno compile --unstable -A --target << parameters.target >> -o sui-toolkit_<< parameters.target >> ./bin/withdrawer.ts
+            deno compile --unstable -A --target << parameters.target >> -o sui-toolkit_<< parameters.target >> ./bin/toolkit.ts
       - persist_to_workspace:
           root: "/sui-toolkit"
           paths:
