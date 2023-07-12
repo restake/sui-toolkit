@@ -11,7 +11,7 @@ const config: Config = {
     VAULT_TOKEN: Deno.env.get("VAULT_TOKEN") ?? "",
     VAULT_NAMESPACE: Deno.env.get("VAULT_NAMESPACE"),
 
-    SUI_RPC_URL: Deno.env.get("SUI_RPC_URL") ?? "https://rpc.mainnet.sui.io",
+    SUI_RPC_URL: Deno.env.get("SUI_RPC_URL") ?? "https://rpc.testnet.sui.io",
 };
 
 export default config;
