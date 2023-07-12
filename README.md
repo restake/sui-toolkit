@@ -1,17 +1,17 @@
-# sui-withdrawer
+# sui-toolkit
 
-This CLI tool is designed to facilitate the withdrawal of stake rewards on Sui network. It enables users to easily withdraw their earned tokens and transfer them to an external address of their choice.
+This CLI tool is designed to facilitate several on-chain operations on the Sui network.
 
 ## Features
 
-- Simple and straightforward rewards withdrawal process.
+- Simple and straightforward stake rewards withdrawal process.
 - Support for HashiCorp Vault and plain-text Base64-encoded keys.
 
 ## Installation
 
 ### Prebuilt Binaries
 
-We have prebuilt binaries available for common platforms, making it easy to run the CLI tool without any major dependencies. You can find the binaries on the [releases](https://github.com/restake/sui-withdrawer/releases) page.
+We have prebuilt binaries available for common platforms, making it easy to run the CLI tool without any major dependencies. You can find the binaries on the [releases](https://github.com/restake/sui-toolkit/releases) page.
 
 ### Building from Source
 
@@ -26,16 +26,16 @@ deno run -A ./bin/withdrawer.ts
 To build a binary:
 
 ```shell
-deno compile --unstable -A -o sui-withdrawer ./bin/withdrawer.ts
+deno compile --unstable -A -o sui-toolkit ./bin/withdrawer.ts
 ```
-This will produce a `sui-withdrawer` executable binary in the project directory.
+This will produce a `sui-toolkit` executable binary in the project directory.
 
 Note: compiling binaries with Deno that contain `npm` packages is still quite experimental, hence we use the `--unstable` flag.
 
 ## Usage
 
 ```
-Usage:   sui-withdrawer
+Usage:   sui-toolkit
 Version: v0.0.1
 
 Description:

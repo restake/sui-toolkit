@@ -10,7 +10,7 @@ import { delay } from "$std/async/delay.ts";
 
 import config from "./config.ts";
 import { Stake } from "./types.ts";
-import { SendPrompt } from "./bin/withdrawer.ts";
+import { SendPrompt } from "./bin/toolkit.ts";
 
 export const provider = new JsonRpcProvider(
     new Connection({

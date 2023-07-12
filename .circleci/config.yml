@@ -38,11 +38,11 @@ jobs:
     steps:
       - run:
           name: "Clone the source"
-          command: git clone https://github.com/restake/sui-withdrawer.git sui-withdrawer
+          command: git clone https://github.com/restake/sui-toolkit.git sui-toolkit
       - persist_to_workspace:
           root: "."
           paths:
-            - sui-withdrawer/*
+            - sui-toolkit/*
   build:
     docker:
       - image: "denoland/deno:alpine-1.35.0"
@@ -56,12 +56,12 @@ jobs:
       - run:
           name: "Build binary"
           command: |
-            cd /sui-withdrawer
-            deno compile --unstable -A --target << parameters.target >> -o sui-withdrawer_<< parameters.target >> ./bin/withdrawer.ts
+            cd /sui-toolkit
+            deno compile --unstable -A --target << parameters.target >> -o sui-toolkit_<< parameters.target >> ./bin/withdrawer.ts
       - persist_to_workspace:
-          root: "/sui-withdrawer"
+          root: "/sui-toolkit"
           paths:
-            - sui-withdrawer_*
+            - sui-toolkit_*
   publish:
     executor:
       name: "go/default"
@@ -77,8 +77,8 @@ jobs:
           name: "Create checksums and clean up binaries folder"
           command: |
             cd /tmp/binaries
-            rm -rf sui-withdrawer
-            sha256sum sui-withdrawer_* > SHA256SUMS
+            rm -rf sui-toolkit
+            sha256sum sui-toolkit_* > SHA256SUMS
       - run:
           name: "Publish Github release"
           command: |
