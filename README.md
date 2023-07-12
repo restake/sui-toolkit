@@ -20,13 +20,13 @@ If you prefer to build or run the project from source, make sure you have [Deno]
 To simply run the CLI:
 
 ```shell
-deno run -A ./bin/withdrawer.ts
+deno run -A ./bin/toolkit.ts
 ```
 
 To build a binary:
 
 ```shell
-deno compile --unstable -A -o sui-toolkit ./bin/withdrawer.ts
+deno compile --unstable -A -o sui-toolkit ./bin/toolkit.ts
 ```
 This will produce a `sui-toolkit` executable binary in the project directory.
 
