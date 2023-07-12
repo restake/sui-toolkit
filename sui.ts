@@ -18,16 +18,17 @@ export const provider = new JsonRpcProvider(
     }),
 );
 
-const getSelfStakes = async (): Promise<Stake[]> => {
+const getSelfStakes = async (address: string): Promise<Stake[]> => {
     const stakes = await provider.getStakes({
-        owner: config.SUI_VALIDATOR_ADDRESS,
+        owner: address,
     });
 
-    return stakes.find((stake) => stake.validatorAddress === config.SUI_VALIDATOR_ADDRESS)?.stakes || [];
+    return stakes.find((stake) => stake.validatorAddress === address)?.stakes || [];
 };
 
 export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
-    const stakes = await getSelfStakes();
+    const address = await signer.getAddress();
+    const stakes = await getSelfStakes(address);
     const transactions: SuiTransactionBlockResponse[] = [];
 
     for (const stake of stakes) {
