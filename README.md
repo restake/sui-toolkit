@@ -68,9 +68,9 @@ We use [restake/deno-hashicorp-vault](https://github.com/restake/deno-hashicorp-
 To properly communicate with HashiCorp Vault, you need to have the following enviornment variables set:
 
 ```shell
-export VAULT_ADDR="https://your-vault-address.tld";
-export VAULT_TOKEN="foobar";
-export VAULT_NAMESPACE="admin/...";
+export VAULT_ADDR="https://your-vault-address.tld"
+export VAULT_TOKEN="foobar"
+export VAULT_NAMESPACE="admin/..."
 ```
 
 ## License
