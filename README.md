@@ -1,10 +1,10 @@
 # sui-withdrawer
 
-This tool is designed to facilitate the withdrawal of stake rewards for Sui validator operators. It enables operators to easily withdraw their earned tokens and transfer them to an external address of their choice.
+This CLI tool is designed to facilitate the withdrawal of stake rewards on Sui network. It enables users to easily withdraw their earned tokens and transfer them to an external address of their choice.
 
 ## Features
 
-- Simple and straightforward rewards withdrawal process for validator operators.
+- Simple and straightforward rewards withdrawal process.
 - Support for HashiCorp Vault and plain-text Base64-encoded keys.
 
 ## Installation
@@ -55,9 +55,23 @@ Commands:
   send      <amount> <recipient>  - Send Sui to a given address
 ```
 
+The default RPC endpoint is `https://rpc.testnet.sui.io`. You can override it with the `SUI_RPC_URL` environment variable.
+
+```shell
+export SUI_RPC_URL="https://rpc.testnet.sui.io"
+```
+
 ## HashiCorp Vault
 
 We use [restake/deno-hashicorp-vault](https://github.com/restake/deno-hashicorp-vault) behind the scenes. It's our own open-source implementation of a Deno SDK for interfacing with HashiCorp Vault API.
+
+To properly communicate with HashiCorp Vault, you need to have the following enviornment variables set:
+
+```shell
+export VAULT_ADDR="https://your-vault-address.tld";
+export VAULT_TOKEN="foobar";
+export VAULT_NAMESPACE="admin/...";
+```
 
 ## License
 
