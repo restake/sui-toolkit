@@ -3,7 +3,7 @@ import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { getValidatorOperationCapabilityId, provider, sendSuiObjects, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
+import { provider, sendSuiObjects, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
