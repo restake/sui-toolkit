@@ -9,8 +9,8 @@ import {
 import { delay } from "$std/async/delay.ts";
 
 import config from "./config.ts";
-import { Stake } from "./types.ts";
-import { SendPrompt } from "./bin/toolkit.ts";
+import { Stake, ValidatorOperationCapContent } from "./types.ts";
+import { RgpPrompt, SendPrompt } from "./bin/toolkit.ts";
 
 export const provider = new JsonRpcProvider(
     new Connection({
@@ -24,6 +24,24 @@ const getSelfStakes = async (address: string): Promise<Stake[]> => {
     });
 
     return stakes.find((stake) => stake.validatorAddress === address)?.stakes || [];
+};
+
+const getValidatorOperationCapabilityId = async (address: string): Promise<string | undefined> => {
+    const { data } = await provider.getOwnedObjects({
+        owner: address,
+        filter: {
+            StructType: "0x3::validator_cap::UnverifiedValidatorOperationCap",
+        },
+        options: {
+            showContent: true,
+        },
+    });
+
+    const validatorOperationCap = data.find((object) => {
+        return (object.data?.content as ValidatorOperationCapContent).fields.authorizer_validator_address === address;
+    });
+
+    return validatorOperationCap?.data?.objectId;
 };
 
 export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
@@ -70,6 +88,35 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
         });
     } catch (e) {
         throw new Error(`Failed to send ${amount} SUI to ${recipient}`, {
+            cause: e,
+        });
+    }
+};
+
+export const updateReferenceGasPrice = async (signer: RawSigner, { price }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
+    const address = await signer.getAddress();
+    const capabilityId = await getValidatorOperationCapabilityId(address);
+
+    if (!capabilityId) {
+        throw new Error(`No validator operation capability found for address ${address}`);
+    }
+
+    const txb = new TransactionBlock();
+    txb.moveCall({
+        target: "0x3::sui_system::request_set_gas_price",
+        arguments: [
+            txb.object(SUI_SYSTEM_STATE_OBJECT_ID),
+            txb.object(capabilityId),
+            txb.pure(price),
+        ],
+    });
+
+    try {
+        return await signer.signAndExecuteTransactionBlock({
+            transactionBlock: txb,
+        });
+    } catch (e) {
+        throw new Error(`Failed to update reference gas price`, {
             cause: e,
         });
     }

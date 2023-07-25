@@ -11,7 +11,8 @@ This CLI tool is designed to facilitate several on-chain operations on the Sui n
 
 ### Prebuilt Binaries
 
-We have prebuilt binaries available for common platforms, making it easy to run the CLI tool without any major dependencies. You can find the binaries on the [releases](https://github.com/restake/sui-toolkit/releases) page.
+We have prebuilt binaries available for common platforms, making it easy to run the CLI tool without any major dependencies. You can find
+the binaries on the [releases](https://github.com/restake/sui-toolkit/releases) page.
 
 ### Building from Source
 
@@ -28,6 +29,7 @@ To build a binary:
 ```shell
 deno compile --unstable -A -o sui-toolkit ./bin/toolkit.ts
 ```
+
 This will produce a `sui-toolkit` executable binary in the project directory.
 
 Note: compiling binaries with Deno that contain `npm` packages is still quite experimental, hence we use the `--unstable` flag.
@@ -63,7 +65,8 @@ export SUI_RPC_URL="https://rpc.testnet.sui.io"
 
 ## HashiCorp Vault
 
-We use [restake/deno-hashicorp-vault](https://github.com/restake/deno-hashicorp-vault) behind the scenes. It's our own open-source implementation of a Deno SDK for interfacing with HashiCorp Vault API.
+We use [restake/deno-hashicorp-vault](https://github.com/restake/deno-hashicorp-vault) behind the scenes. It's our own open-source
+implementation of a Deno SDK for interfacing with HashiCorp Vault API.
 
 To properly communicate with HashiCorp Vault, you need to have the following enviornment variables set:
 
