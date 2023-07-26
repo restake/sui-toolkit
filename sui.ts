@@ -10,7 +10,7 @@ import { delay } from "$std/async/delay.ts";
 
 import config from "./config.ts";
 import { Stake, ValidatorOperationCapContent } from "./types.ts";
-import { RgpPrompt, SendPrompt } from "./bin/toolkit.ts";
+import { CommissionPrompt, RgpPrompt, SendPrompt } from "./bin/toolkit.ts";
 
 export const provider = new JsonRpcProvider(
     new Connection({
@@ -117,6 +117,34 @@ export const updateReferenceGasPrice = async (signer: RawSigner, { price }: RgpP
         });
     } catch (e) {
         throw new Error(`Failed to update reference gas price`, {
+            cause: e,
+        });
+    }
+};
+
+export const updateCommissionRate = async (signer: RawSigner, { rate }: CommissionPrompt): Promise<SuiTransactionBlockResponse> => {
+    const address = await signer.getAddress();
+    const capabilityId = await getValidatorOperationCapabilityId(address);
+
+    if (!capabilityId) {
+        throw new Error(`No validator operation capability found for address ${address}`);
+    }
+
+    const txb = new TransactionBlock();
+    txb.moveCall({
+        target: "0x3::sui_system::request_set_commission_rate",
+        arguments: [
+            txb.object(SUI_SYSTEM_STATE_OBJECT_ID),
+            txb.pure(rate),
+        ],
+    });
+
+    try {
+        return await signer.signAndExecuteTransactionBlock({
+            transactionBlock: txb,
+        });
+    } catch (e) {
+        throw new Error(`Failed to update commission rate`, {
             cause: e,
         });
     }

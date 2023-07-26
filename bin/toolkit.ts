@@ -3,7 +3,7 @@ import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { provider, sendSuiObjects, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
+import { provider, sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
@@ -31,6 +31,10 @@ export type SendPrompt = Prompt & {
 
 export type RgpPrompt = Prompt & {
     price: number;
+};
+
+export type CommissionPrompt = Prompt & {
+    rate: number;
 };
 
 function isVaultPrompt(p: Prompt): p is VaultPrompt {
@@ -70,6 +74,12 @@ const send = async (prompt: SendPrompt) => {
 const updateRgp = async (prompt: RgpPrompt) => {
     const signer = await getSigner(prompt);
     const tx = await updateReferenceGasPrice(signer, prompt);
+    console.log(tx);
+};
+
+const updateCommission = async (prompt: CommissionPrompt) => {
+    const signer = await getSigner(prompt);
+    const tx = await updateCommissionRate(signer, prompt);
     console.log(tx);
 };
 
@@ -166,5 +176,13 @@ await new Command()
         rgpPrompt.price = price;
         rgpPrompt.base64 = options.base64;
         await updateRgp(rgpPrompt);
+    })
+    .command("update-commission-rate", "Update the commission rate (if the account is a validator)")
+    .arguments("<rate:number>")
+    .action(async (options, rate) => {
+        const commissionPrompt = await getPrompt<CommissionPrompt>();
+        commissionPrompt.rate = rate;
+        commissionPrompt.base64 = options.base64;
+        await updateCommission(commissionPrompt);
     })
     .parse(Deno.args);
