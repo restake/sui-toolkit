@@ -129,7 +129,7 @@ const getPrompt = <T>(): Promise<T> => {
 await new Command()
     .name("sui-toolkit")
     .description("Easily interact with the Sui blockchain")
-    .version("v0.0.1")
+    .version("v0.0.2")
     .action(function () {
         this.showHelp();
     })
