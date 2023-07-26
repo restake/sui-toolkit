@@ -8,3 +8,15 @@ export function createKeySchema(key: string) {
 }
 
 export type Stake = DelegatedStake["stakes"][number];
+
+export type ValidatorOperationCapContent = {
+    dataType: string;
+    type: string;
+    hasPublicTransfer: boolean;
+    fields: {
+        authorizer_validator_address: string;
+        id: {
+            id: string;
+        };
+    };
+};

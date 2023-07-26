@@ -3,7 +3,7 @@ import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { provider, sendSuiObjects, withdrawStakeObjects } from "../sui.ts";
+import { provider, sendSuiObjects, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
@@ -27,6 +27,10 @@ type PlaintextPrompt = Prompt & {
 export type SendPrompt = Prompt & {
     amount: number;
     recipient: string;
+};
+
+export type RgpPrompt = Prompt & {
+    price: number;
 };
 
 function isVaultPrompt(p: Prompt): p is VaultPrompt {
@@ -60,6 +64,12 @@ const withdraw = async (prompt: Prompt) => {
 const send = async (prompt: SendPrompt) => {
     const signer = await getSigner(prompt);
     const tx = await sendSuiObjects(signer, prompt);
+    console.log(tx);
+};
+
+const updateRgp = async (prompt: RgpPrompt) => {
+    const signer = await getSigner(prompt);
+    const tx = await updateReferenceGasPrice(signer, prompt);
     console.log(tx);
 };
 
@@ -148,5 +158,13 @@ await new Command()
         if (confirmation) {
             await send(sendPrompt);
         }
+    })
+    .command("update-gas-price", "Update the reference gas price (if the account is a validator)")
+    .arguments("<price:number>")
+    .action(async (options, price) => {
+        const rgpPrompt = await getPrompt<RgpPrompt>();
+        rgpPrompt.price = price;
+        rgpPrompt.base64 = options.base64;
+        await updateRgp(rgpPrompt);
     })
     .parse(Deno.args);
