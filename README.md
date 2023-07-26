@@ -38,11 +38,11 @@ Note: compiling binaries with Deno that contain `npm` packages is still quite ex
 
 ```
 Usage:   sui-toolkit
-Version: v0.0.1
+Version: v0.0.2
 
 Description:
 
-  Easily withdraw Sui validator rewards
+  Easily interact with the Sui blockchain
 
 Options:
 
@@ -53,8 +53,10 @@ Options:
 
 Commands:
 
-  withdraw                        - Withdraw all staked Sui objects
-  send      <amount> <recipient>  - Send Sui to a given address
+  withdraw                                      - Withdraw all staked Sui objects
+  send                    <amount> <recipient>  - Send Sui to a given address
+  update-gas-price        <price>               - Update the reference gas price (if the account is a validator)
+  update-commission-rate  <rate>                - Update the commission rate (if the account is a validator)
 ```
 
 The default RPC endpoint is `https://rpc.testnet.sui.io`. You can override it with the `SUI_RPC_URL` environment variable.
