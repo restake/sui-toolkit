@@ -26,7 +26,7 @@ const getSelfStakes = async (address: string): Promise<Stake[]> => {
     return stakes.find((stake) => stake.validatorAddress === address)?.stakes || [];
 };
 
-const getValidatorOperationCapabilityId = async (address: string): Promise<string | undefined> => {
+const getValidatorOperationCapabilityId = async (address: string, validator: string | undefined): Promise<string | undefined> => {
     const { data } = await provider.getOwnedObjects({
         owner: address,
         filter: {
@@ -38,7 +38,8 @@ const getValidatorOperationCapabilityId = async (address: string): Promise<strin
     });
 
     const validatorOperationCap = data.find((object) => {
-        return (object.data?.content as ValidatorOperationCapContent).fields.authorizer_validator_address === address;
+        return (object.data?.content as ValidatorOperationCapContent).fields.authorizer_validator_address ===
+            (validator ? validator : address);
     });
 
     return validatorOperationCap?.data?.objectId;
@@ -93,9 +94,9 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
     }
 };
 
-export const updateReferenceGasPrice = async (signer: RawSigner, { price }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
+export const updateReferenceGasPrice = async (signer: RawSigner, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
     const address = await signer.getAddress();
-    const capabilityId = await getValidatorOperationCapabilityId(address);
+    const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 
     if (!capabilityId) {
         throw new Error(`No validator operation capability found for address ${address}`);
@@ -122,9 +123,12 @@ export const updateReferenceGasPrice = async (signer: RawSigner, { price }: RgpP
     }
 };
 
-export const updateCommissionRate = async (signer: RawSigner, { rate }: CommissionPrompt): Promise<SuiTransactionBlockResponse> => {
+export const updateCommissionRate = async (
+    signer: RawSigner,
+    { rate, validator }: CommissionPrompt,
+): Promise<SuiTransactionBlockResponse> => {
     const address = await signer.getAddress();
-    const capabilityId = await getValidatorOperationCapabilityId(address);
+    const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 
     if (!capabilityId) {
         throw new Error(`No validator operation capability found for address ${address}`);
@@ -138,6 +142,7 @@ export const updateCommissionRate = async (signer: RawSigner, { rate }: Commissi
             txb.pure(rate),
         ],
     });
+    txb.setGasBudget(2000000);
 
     try {
         return await signer.signAndExecuteTransactionBlock({

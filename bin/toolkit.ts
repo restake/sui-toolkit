@@ -31,10 +31,12 @@ export type SendPrompt = Prompt & {
 
 export type RgpPrompt = Prompt & {
     price: number;
+    validator: string | undefined;
 };
 
 export type CommissionPrompt = Prompt & {
     rate: number;
+    validator: string | undefined;
 };
 
 function isVaultPrompt(p: Prompt): p is VaultPrompt {
@@ -170,19 +172,35 @@ await new Command()
         }
     })
     .command("update-gas-price", "Update the reference gas price (if the account is a validator)")
+    .option(
+        "--validator [address:string]",
+        "Update the reference gas price for a a specific validator (if the used account holds the operator capability)",
+    )
     .arguments("<price:number>")
     .action(async (options, price) => {
         const rgpPrompt = await getPrompt<RgpPrompt>();
         rgpPrompt.price = price;
         rgpPrompt.base64 = options.base64;
+        // Avoid passing undefined as a string to the prompt...
+        if (options.validator) {
+            rgpPrompt.validator = String(options.validator);
+        }
         await updateRgp(rgpPrompt);
     })
     .command("update-commission-rate", "Update the commission rate (if the account is a validator)")
+    .option(
+        "--validator [address:string]",
+        "Update the commission rate for a a specific validator (if the used account holds the operator capability)",
+    )
     .arguments("<rate:number>")
     .action(async (options, rate) => {
         const commissionPrompt = await getPrompt<CommissionPrompt>();
         commissionPrompt.rate = rate;
         commissionPrompt.base64 = options.base64;
+        // Avoid passing undefined as a string to the prompt...
+        if (options.validator) {
+            commissionPrompt.validator = String(options.validator);
+        }
         await updateCommission(commissionPrompt);
     })
     .parse(Deno.args);

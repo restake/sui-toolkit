@@ -37,6 +37,8 @@ export const getKeypair = async (path: string, key: string, isBase64Encoded: boo
         throw new Error("Failed to read keypair from Vault", {
             cause: e,
         });
+    } finally {
+        await client.logout();
     }
 
     return Ed25519Keypair.fromSecretKey(

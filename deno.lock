@@ -136,34 +136,24 @@
         "integrity": "sha512-l/gZUxlr0oHgnwuHYxIVp+JOrdj1imhffL5iK25JYh3WV4sTxiQntCLuSen6etXyFG9c1l2GNvVaGZaV3mb4Hw==",
         "dependencies": {
           "@mysten/bcs": "@mysten/bcs@0.7.2",
-          "@noble/curves": "@noble/curves@1.1.0",
-          "@noble/hashes": "@noble/hashes@1.3.1",
+          "@noble/curves": "@noble/curves@1.2.0",
+          "@noble/hashes": "@noble/hashes@1.3.2",
           "@open-rpc/client-js": "@open-rpc/client-js@1.8.1_ws@7.5.9",
-          "@scure/bip32": "@scure/bip32@1.3.0",
+          "@scure/bip32": "@scure/bip32@1.3.2",
           "@scure/bip39": "@scure/bip39@1.2.1",
           "@suchipi/femver": "@suchipi/femver@1.0.0",
           "superstruct": "superstruct@1.0.3",
           "tweetnacl": "tweetnacl@1.0.3"
         }
       },
-      "@noble/curves@1.0.0": {
-        "integrity": "sha512-2upgEu0iLiDVDZkNLeFV2+ht0BAVgQnEmCk6JsOch9Rp8xfkMCbvbAZlA2pBHQc73dbl+vFOXfqkf4uemdn0bw==",
+      "@noble/curves@1.2.0": {
+        "integrity": "sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==",
         "dependencies": {
-          "@noble/hashes": "@noble/hashes@1.3.0"
+          "@noble/hashes": "@noble/hashes@1.3.2"
         }
       },
-      "@noble/curves@1.1.0": {
-        "integrity": "sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==",
-        "dependencies": {
-          "@noble/hashes": "@noble/hashes@1.3.1"
-        }
-      },
-      "@noble/hashes@1.3.0": {
-        "integrity": "sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==",
-        "dependencies": {}
-      },
-      "@noble/hashes@1.3.1": {
-        "integrity": "sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==",
+      "@noble/hashes@1.3.2": {
+        "integrity": "sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==",
         "dependencies": {}
       },
       "@open-rpc/client-js@1.8.1_ws@7.5.9": {
@@ -175,23 +165,23 @@
           "ws": "ws@7.5.9"
         }
       },
-      "@scure/base@1.1.1": {
-        "integrity": "sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==",
+      "@scure/base@1.1.2": {
+        "integrity": "sha512-sSCrnIdaUZQHhBxZThMuk7Wm1TWzMD3uJNdGgx3JS23xSqevu0tAOsg8k66nL3R2NwQe65AI9GgqpPOgZys/eA==",
         "dependencies": {}
       },
-      "@scure/bip32@1.3.0": {
-        "integrity": "sha512-bcKpo1oj54hGholplGLpqPHRbIsnbixFtc06nwuNM5/dwSXOq/AAYoIBRsBmnZJSdfeNW5rnff7NTAz3ZCqR9Q==",
+      "@scure/bip32@1.3.2": {
+        "integrity": "sha512-N1ZhksgwD3OBlwTv3R6KFEcPojl/W4ElJOeCZdi+vuI5QmTFwLq3OFf2zd2ROpKvxFdgZ6hUpb0dx9bVNEwYCA==",
         "dependencies": {
-          "@noble/curves": "@noble/curves@1.0.0",
-          "@noble/hashes": "@noble/hashes@1.3.1",
-          "@scure/base": "@scure/base@1.1.1"
+          "@noble/curves": "@noble/curves@1.2.0",
+          "@noble/hashes": "@noble/hashes@1.3.2",
+          "@scure/base": "@scure/base@1.1.2"
         }
       },
       "@scure/bip39@1.2.1": {
         "integrity": "sha512-Z3/Fsz1yr904dduJD0NpiyRHhRYHdcnyh73FZWiV+/qhWi83wNJ3NWolYqCEN+ZWsUz2TWwajJggcRE9r1zUYg==",
         "dependencies": {
-          "@noble/hashes": "@noble/hashes@1.3.1",
-          "@scure/base": "@scure/base@1.1.1"
+          "@noble/hashes": "@noble/hashes@1.3.2",
+          "@scure/base": "@scure/base@1.1.2"
         }
       },
       "@suchipi/femver@1.0.0": {
@@ -211,8 +201,8 @@
       "isomorphic-fetch@3.0.0": {
         "integrity": "sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==",
         "dependencies": {
-          "node-fetch": "node-fetch@2.6.11",
-          "whatwg-fetch": "whatwg-fetch@3.6.2"
+          "node-fetch": "node-fetch@2.7.0",
+          "whatwg-fetch": "whatwg-fetch@3.6.18"
         }
       },
       "isomorphic-ws@5.0.0_ws@7.5.9": {
@@ -221,8 +211,8 @@
           "ws": "ws@7.5.9"
         }
       },
-      "node-fetch@2.6.11": {
-        "integrity": "sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==",
+      "node-fetch@2.7.0": {
+        "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
         "dependencies": {
           "whatwg-url": "whatwg-url@5.0.0"
         }
@@ -247,8 +237,8 @@
         "integrity": "sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==",
         "dependencies": {}
       },
-      "whatwg-fetch@3.6.2": {
-        "integrity": "sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==",
+      "whatwg-fetch@3.6.18": {
+        "integrity": "sha512-ltN7j66EneWn5TFDO4L9inYC1D+Czsxlrw2SalgjMmEMkLfA5SIZxEFdE6QtHFiiM6Q7WL32c7AkI3w6yxM84Q==",
         "dependencies": {}
       },
       "whatwg-url@5.0.0": {
