@@ -38,7 +38,7 @@ Note: compiling binaries with Deno that contain `npm` packages is still quite ex
 
 ```
 Usage:   sui-toolkit
-Version: v0.0.2
+Version: v0.0.3
 
 Description:
 
