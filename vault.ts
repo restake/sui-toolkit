@@ -1,4 +1,4 @@
-import { Ed25519Keypair } from "@mysten/sui.js";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { createKVReadResponse, VAULT_AUTH_TYPE, VaultClient, VaultTokenCredentials } from "vault";
 
 import config from "./config.ts";

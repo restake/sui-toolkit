@@ -1,4 +1,5 @@
-import { fromB64, PRIVATE_KEY_SIZE } from "@mysten/sui.js";
+import { PRIVATE_KEY_SIZE } from "@mysten/sui/cryptography";
+import { fromB64 } from "@mysten/sui/utils";
 
 export const decodeKeypair = (keypair: string, b64Encoded = false): Uint8Array => {
     keypair = b64Encoded ? atob(keypair) : keypair;

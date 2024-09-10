@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DelegatedStake } from "@mysten/sui.js";
+import type { DelegatedStake } from "@mysten/sui/client";
 
 export function createKeySchema(key: string) {
     return z.object({

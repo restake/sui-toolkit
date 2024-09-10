@@ -1,25 +1,18 @@
-import {
-    Connection,
-    JsonRpcProvider,
-    RawSigner,
-    SUI_SYSTEM_STATE_OBJECT_ID,
-    SuiTransactionBlockResponse,
-    TransactionBlock,
-} from "@mysten/sui.js";
-import { delay } from "$std/async/delay.ts";
+import { delay } from "@std/async/delay"
+
+import { SUI_SYSTEM_STATE_OBJECT_ID } from "@mysten/sui/utils"
+import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions"
+import { Ed25519Keypair } from "@mysten/sui";
 
 import config from "./config.ts";
 import { Stake, ValidatorOperationCapContent } from "./types.ts";
 import { CommissionPrompt, RgpPrompt, SendPrompt } from "./bin/toolkit.ts";
 
-export const provider = new JsonRpcProvider(
-    new Connection({
-        fullnode: config.SUI_RPC_URL,
-    }),
-);
+export const client = new SuiClient({url: config.SUI_RPC_URL})
 
 const getSelfStakes = async (address: string): Promise<Stake[]> => {
-    const stakes = await provider.getStakes({
+    const stakes = await client.getStakes({
         owner: address,
     });
 
@@ -27,7 +20,7 @@ const getSelfStakes = async (address: string): Promise<Stake[]> => {
 };
 
 const getValidatorOperationCapabilityId = async (address: string, validator: string | undefined): Promise<string | undefined> => {
-    const { data } = await provider.getOwnedObjects({
+    const { data } = await client.getOwnedObjects({
         owner: address,
         filter: {
             StructType: "0x3::validator_cap::UnverifiedValidatorOperationCap",
@@ -45,13 +38,13 @@ const getValidatorOperationCapabilityId = async (address: string, validator: str
     return validatorOperationCap?.data?.objectId;
 };
 
-export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransactionBlockResponse[]> => {
+export const withdrawStakeObjects = async (signer: Ed25519Keypair): Promise<SuiTransactionBlockResponse[]> => {
     const address = await signer.getAddress();
     const stakes = await getSelfStakes(address);
     const transactions: SuiTransactionBlockResponse[] = [];
 
     for (const stake of stakes) {
-        const txb = new TransactionBlock();
+        const txb = new Transaction();
         txb.moveCall({
             target: "0x3::sui_system::request_withdraw_stake",
             arguments: [
@@ -78,10 +71,10 @@ export const withdrawStakeObjects = async (signer: RawSigner): Promise<SuiTransa
     return transactions;
 };
 
-export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
-    const txb = new TransactionBlock();
-    const coin = txb.splitCoins(txb.gas, [txb.pure(amount * 1e9)]);
-    txb.transferObjects([coin], txb.pure(recipient));
+export const sendSuiObjects = async (signer: Ed25519Keypair, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
+    const txb = new Transaction();
+    const coin = txb.splitCoins(txb.gas, [amount * 1e9]);
+    txb.transferObjects([coin], recipient);
 
     try {
         return await signer.signAndExecuteTransactionBlock({
@@ -94,7 +87,7 @@ export const sendSuiObjects = async (signer: RawSigner, { amount, recipient }: S
     }
 };
 
-export const updateReferenceGasPrice = async (signer: RawSigner, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
+export const updateReferenceGasPrice = async (signer: Ed25519Keypair, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
     const address = await signer.getAddress();
     const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 
@@ -102,13 +95,13 @@ export const updateReferenceGasPrice = async (signer: RawSigner, { price, valida
         throw new Error(`No validator operation capability found for address ${address}`);
     }
 
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     txb.moveCall({
         target: "0x3::sui_system::request_set_gas_price",
         arguments: [
             txb.object(SUI_SYSTEM_STATE_OBJECT_ID),
             txb.object(capabilityId),
-            txb.pure(price),
+            txb.pure.u64(price),
         ],
     });
 
@@ -124,7 +117,7 @@ export const updateReferenceGasPrice = async (signer: RawSigner, { price, valida
 };
 
 export const updateCommissionRate = async (
-    signer: RawSigner,
+    signer: Ed25519Keypair,
     { rate, validator }: CommissionPrompt,
 ): Promise<SuiTransactionBlockResponse> => {
     const address = await signer.getAddress();
@@ -134,12 +127,12 @@ export const updateCommissionRate = async (
         throw new Error(`No validator operation capability found for address ${address}`);
     }
 
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     txb.moveCall({
         target: "0x3::sui_system::request_set_commission_rate",
         arguments: [
             txb.object(SUI_SYSTEM_STATE_OBJECT_ID),
-            txb.pure(rate),
+            txb.pure.u64(rate),
         ],
     });
     txb.setGasBudget(2000000);

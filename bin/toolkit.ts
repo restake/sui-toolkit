@@ -1,9 +1,10 @@
 import { Command } from "cliffy/command/mod.ts";
 import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
-import { Ed25519Keypair, RawSigner } from "@mysten/sui.js";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { provider, sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
+import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
@@ -47,7 +48,7 @@ function isPlaintextPrompt(p: Prompt): p is PlaintextPrompt {
     return p.provider === "plain-text";
 }
 
-const getSigner = async (prompt: Prompt): Promise<RawSigner> => {
+const getSigner = async (prompt: Prompt): Promise<Ed25519Keypair> => {
     let keypair: Ed25519Keypair;
 
     if (isVaultPrompt(prompt)) {
@@ -58,7 +59,7 @@ const getSigner = async (prompt: Prompt): Promise<RawSigner> => {
         throw new Error(`Unsupported provider: ${prompt.provider}`);
     }
 
-    return new RawSigner(keypair, provider);
+    return keypair;
 };
 
 const withdraw = async (prompt: Prompt) => {
