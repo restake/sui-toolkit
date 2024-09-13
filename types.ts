@@ -20,3 +20,11 @@ export type ValidatorOperationCapContent = {
         };
     };
 };
+
+export type Config = {
+    provider: "vault" | "local",
+    path?: string,
+    key?: string,
+    value?: string,
+    encoding: string,
+};

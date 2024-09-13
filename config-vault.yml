@@ -1,0 +1,6 @@
+provider: "vault"
+# One of base64, doubleBase64
+encoding: "doubleBase64"
+path: "kv/data/keys/"
+key: "account_key"
+

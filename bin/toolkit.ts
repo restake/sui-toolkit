@@ -1,17 +1,19 @@
 import { Command } from "cliffy/command/mod.ts";
 import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+import { parse as parseYaml } from "@std/yaml"
 
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
 import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
+import { Config } from "../types.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
     path: string | undefined;
     key: string | undefined;
     keypair: string | undefined;
-    base64: boolean;
+    encoding: string;
 };
 
 type VaultPrompt = Prompt & {
@@ -52,9 +54,9 @@ const getSigner = async (prompt: Prompt): Promise<Ed25519Keypair> => {
     let keypair: Ed25519Keypair;
 
     if (isVaultPrompt(prompt)) {
-        keypair = await getKeypair(prompt.path!, prompt.key!, prompt.base64);
+        keypair = await getKeypair(prompt.path!, prompt.key!, prompt.encoding);
     } else if (isPlaintextPrompt(prompt)) {
-        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!, prompt.base64));
+        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!, prompt.encoding));
     } else {
         throw new Error(`Unsupported provider: ${prompt.provider}`);
     }
@@ -139,10 +141,47 @@ await new Command()
     .globalOption("-b, --base64", "Used to indicate whether the keypair is double base64 encoded - base64(base64Keypair)", {
         default: false,
     })
+    .globalOption("-c, --config <path:string>", "Used to specify the key path and encoding in a config file", {
+        default: false,
+    })
     .command("withdraw", "Withdraw all staked Sui objects")
     .action(async (options) => {
-        const withdrawPrompt = await getPrompt<Prompt>();
-        withdrawPrompt.base64 = options.base64;
+
+        let withdrawPrompt: Prompt = {
+            provider: "vault",
+            path: undefined,
+            key: undefined,
+            keypair: undefined,
+            encoding: "base64",
+        }
+
+        if (typeof options.config === "string") {
+            try {
+                const configPath = options.config;
+                const rawConfig = await Deno.readTextFile(configPath);
+                const config: Config = parseYaml(rawConfig) as Config;
+
+                if (config.provider === "vault" || config.provider === "local") {
+                    const provider = config.provider === "vault" ? "vault" : "plain-text"
+                    withdrawPrompt = {
+                        provider,
+                        path: config.path || undefined,
+                        key: config.key || undefined,
+                        keypair: config.value || undefined,
+                        encoding: config.encoding,
+                    };
+                } else {
+                    console.error(`Config provider not supported`);
+                    return;
+                }
+            } catch (err) {
+                console.error(`Error loading config file: ${err.message}`);
+                return;
+            }
+        } else {
+            withdrawPrompt = await getPrompt<Prompt>();
+            withdrawPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
+        }
         const { confirmation } = await prompt([
             {
                 name: "confirmation",
@@ -160,7 +199,7 @@ await new Command()
         const sendPrompt = await getPrompt<SendPrompt>();
         sendPrompt.amount = amount;
         sendPrompt.recipient = recipient;
-        sendPrompt.base64 = options.base64;
+        sendPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
         const { confirmation } = await prompt([
             {
                 name: "confirmation",
@@ -181,7 +220,7 @@ await new Command()
     .action(async (options, price) => {
         const rgpPrompt = await getPrompt<RgpPrompt>();
         rgpPrompt.price = price;
-        rgpPrompt.base64 = options.base64;
+        rgpPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
         // Avoid passing undefined as a string to the prompt...
         if (options.validator) {
             rgpPrompt.validator = String(options.validator);
@@ -197,7 +236,7 @@ await new Command()
     .action(async (options, rate) => {
         const commissionPrompt = await getPrompt<CommissionPrompt>();
         commissionPrompt.rate = rate;
-        commissionPrompt.base64 = options.base64;
+        commissionPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
         // Avoid passing undefined as a string to the prompt...
         if (options.validator) {
             commissionPrompt.validator = String(options.validator);

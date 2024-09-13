@@ -3,7 +3,7 @@ import { delay } from "@std/async/delay"
 import { SUI_SYSTEM_STATE_OBJECT_ID } from "@mysten/sui/utils"
 import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions"
-import { Ed25519Keypair } from "@mysten/sui";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 
 import config from "./config.ts";
 import { Stake, ValidatorOperationCapContent } from "./types.ts";
@@ -38,8 +38,8 @@ const getValidatorOperationCapabilityId = async (address: string, validator: str
     return validatorOperationCap?.data?.objectId;
 };
 
-export const withdrawStakeObjects = async (signer: Ed25519Keypair): Promise<SuiTransactionBlockResponse[]> => {
-    const address = await signer.getAddress();
+export const withdrawStakeObjects = async (keyPair: Ed25519Keypair): Promise<SuiTransactionBlockResponse[]> => {
+    const address = keyPair.getPublicKey().toSuiAddress();
     const stakes = await getSelfStakes(address);
     const transactions: SuiTransactionBlockResponse[] = [];
 
@@ -54,8 +54,9 @@ export const withdrawStakeObjects = async (signer: Ed25519Keypair): Promise<SuiT
         });
 
         try {
-            const tx = await signer.signAndExecuteTransactionBlock({
-                transactionBlock: txb,
+            const tx = await client.signAndExecuteTransaction({
+                transaction: txb,
+                signer: keyPair,
             });
             console.log(tx);
             transactions.push(tx);
@@ -71,14 +72,15 @@ export const withdrawStakeObjects = async (signer: Ed25519Keypair): Promise<SuiT
     return transactions;
 };
 
-export const sendSuiObjects = async (signer: Ed25519Keypair, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
+export const sendSuiObjects = async (keyPair: Ed25519Keypair, { amount, recipient }: SendPrompt): Promise<SuiTransactionBlockResponse> => {
     const txb = new Transaction();
     const coin = txb.splitCoins(txb.gas, [amount * 1e9]);
     txb.transferObjects([coin], recipient);
 
     try {
-        return await signer.signAndExecuteTransactionBlock({
-            transactionBlock: txb,
+        return await client.signAndExecuteTransaction({
+            transaction: txb,
+            signer: keyPair,
         });
     } catch (e) {
         throw new Error(`Failed to send ${amount} SUI to ${recipient}`, {
@@ -87,8 +89,8 @@ export const sendSuiObjects = async (signer: Ed25519Keypair, { amount, recipient
     }
 };
 
-export const updateReferenceGasPrice = async (signer: Ed25519Keypair, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
-    const address = await signer.getAddress();
+export const updateReferenceGasPrice = async (keyPair: Ed25519Keypair, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
+    const address = keyPair.getPublicKey().toSuiAddress();
     const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 
     if (!capabilityId) {
@@ -106,8 +108,9 @@ export const updateReferenceGasPrice = async (signer: Ed25519Keypair, { price, v
     });
 
     try {
-        return await signer.signAndExecuteTransactionBlock({
-            transactionBlock: txb,
+        return await client.signAndExecuteTransaction({
+            transaction: txb,
+            signer: keyPair,
         });
     } catch (e) {
         throw new Error(`Failed to update reference gas price`, {
@@ -117,10 +120,10 @@ export const updateReferenceGasPrice = async (signer: Ed25519Keypair, { price, v
 };
 
 export const updateCommissionRate = async (
-    signer: Ed25519Keypair,
+    keyPair: Ed25519Keypair,
     { rate, validator }: CommissionPrompt,
 ): Promise<SuiTransactionBlockResponse> => {
-    const address = await signer.getAddress();
+    const address = keyPair.getPublicKey().toSuiAddress();
     const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 
     if (!capabilityId) {
@@ -138,8 +141,9 @@ export const updateCommissionRate = async (
     txb.setGasBudget(2000000);
 
     try {
-        return await signer.signAndExecuteTransactionBlock({
-            transactionBlock: txb,
+        return await client.signAndExecuteTransaction({
+            transaction: txb,
+            signer: keyPair,
         });
     } catch (e) {
         throw new Error(`Failed to update commission rate`, {

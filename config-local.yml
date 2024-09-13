@@ -1,0 +1,4 @@
+provider: "local"
+# One of base64, doubleBase64
+encoding: "doubleBase64"
+value: "Cg=="
