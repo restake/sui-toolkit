@@ -1,6 +1,6 @@
 provider: "vault"
 # One of base64, doubleBase64
 encoding: "doubleBase64"
-path: "kv/data/keys/"
+path: "kv/data/keys/restake/sui/01/default/account/private"
 key: "account_key"
 

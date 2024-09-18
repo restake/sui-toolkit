@@ -2,11 +2,12 @@ import { Command } from "cliffy/command/mod.ts";
 import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { parse as parseYaml } from "@std/yaml"
+import { ZodError } from "zod";
 
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
 import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
-import { Config } from "../types.ts";
+import { ConfigSchema } from "../types.ts";
 
 type Prompt = {
     provider: "vault" | "plain-text";
@@ -141,7 +142,7 @@ await new Command()
     .globalOption("-b, --base64", "Used to indicate whether the keypair is double base64 encoded - base64(base64Keypair)", {
         default: false,
     })
-    .globalOption("-c, --config <path:string>", "Used to specify the key path and encoding in a config file", {
+    .globalOption("-c, --config <path:string>", "Used to specify the key path and encoding in a config file - vault or local", {
         default: false,
     })
     .command("withdraw", "Withdraw all staked Sui objects")
@@ -159,7 +160,8 @@ await new Command()
             try {
                 const configPath = options.config;
                 const rawConfig = await Deno.readTextFile(configPath);
-                const config: Config = parseYaml(rawConfig) as Config;
+                const parsedYaml = parseYaml(rawConfig);
+                const config = ConfigSchema.parse(parsedYaml);
 
                 if (config.provider === "vault" || config.provider === "local") {
                     const provider = config.provider === "vault" ? "vault" : "plain-text"
@@ -175,6 +177,9 @@ await new Command()
                     return;
                 }
             } catch (err) {
+                if (err instanceof ZodError) {
+                    throw new Error(`Validation error: ${err.message}`);
+                }
                 console.error(`Error loading config file: ${err.message}`);
                 return;
             }

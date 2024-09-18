@@ -21,10 +21,12 @@ export type ValidatorOperationCapContent = {
     };
 };
 
-export type Config = {
-    provider: "vault" | "local",
-    path?: string,
-    key?: string,
-    value?: string,
-    encoding: string,
-};
+export const ConfigSchema = z.object({
+    provider: z.enum(["vault", "local"]),
+    path: z.string().optional(),
+    key: z.string().optional(),
+    value: z.string().optional(),
+    encoding: z.string(),
+  });
+
+export type ConfigSchema = z.output<typeof ConfigSchema>;
