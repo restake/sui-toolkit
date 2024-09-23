@@ -1,15 +1,15 @@
-import { delay } from "@std/async/delay"
+import { delay } from "@std/async/delay";
 
-import { SUI_SYSTEM_STATE_OBJECT_ID } from "@mysten/sui/utils"
+import { SUI_SYSTEM_STATE_OBJECT_ID } from "@mysten/sui/utils";
 import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
-import { Transaction } from "@mysten/sui/transactions"
+import { Transaction } from "@mysten/sui/transactions";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 
 import config from "./config.ts";
 import { Stake, ValidatorOperationCapContent } from "./types.ts";
 import { CommissionPrompt, RgpPrompt, SendPrompt } from "./bin/toolkit.ts";
 
-export const client = new SuiClient({url: config.SUI_RPC_URL})
+export const client = new SuiClient({ url: config.SUI_RPC_URL });
 
 const getSelfStakes = async (address: string): Promise<Stake[]> => {
     const stakes = await client.getStakes({
@@ -89,7 +89,10 @@ export const sendSuiObjects = async (keyPair: Ed25519Keypair, { amount, recipien
     }
 };
 
-export const updateReferenceGasPrice = async (keyPair: Ed25519Keypair, { price, validator }: RgpPrompt): Promise<SuiTransactionBlockResponse> => {
+export const updateReferenceGasPrice = async (
+    keyPair: Ed25519Keypair,
+    { price, validator }: RgpPrompt,
+): Promise<SuiTransactionBlockResponse> => {
     const address = keyPair.getPublicKey().toSuiAddress();
     const capabilityId = await getValidatorOperationCapabilityId(address, validator);
 

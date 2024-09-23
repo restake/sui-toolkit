@@ -21,12 +21,19 @@ export type ValidatorOperationCapContent = {
     };
 };
 
-export const ConfigSchema = z.object({
-    provider: z.enum(["vault", "local"]),
-    path: z.string().optional(),
-    key: z.string().optional(),
-    value: z.string().optional(),
-    encoding: z.string(),
-  });
+const VaultSchema = z.object({
+    provider: z.literal("vault"),
+    path: z.string(),
+    key: z.string(),
+    encoding: z.enum(["base64", "doubelBase64"]),
+});
+
+const LocalSchema = z.object({
+    provider: z.literal("local"),
+    value: z.string(),
+    encoding: z.enum(["base64", "doubelBase64"]),
+});
+
+export const ConfigSchema = z.discriminatedUnion("provider", [VaultSchema, LocalSchema]);
 
 export type ConfigSchema = z.output<typeof ConfigSchema>;

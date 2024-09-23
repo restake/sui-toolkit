@@ -1,7 +1,7 @@
 import { Command } from "cliffy/command/mod.ts";
 import { Confirm, Input, prompt, Secret, Select } from "cliffy/prompt/mod.ts";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { parse as parseYaml } from "@std/yaml"
+import { parse as parseYaml } from "@std/yaml";
 import { ZodError } from "zod";
 
 import { getKeypair } from "../vault.ts";
@@ -147,14 +147,13 @@ await new Command()
     })
     .command("withdraw", "Withdraw all staked Sui objects")
     .action(async (options) => {
-
         let withdrawPrompt: Prompt = {
             provider: "vault",
             path: undefined,
             key: undefined,
             keypair: undefined,
             encoding: "base64",
-        }
+        };
 
         if (typeof options.config === "string") {
             try {
@@ -164,7 +163,7 @@ await new Command()
                 const config = ConfigSchema.parse(parsedYaml);
 
                 if (config.provider === "vault" || config.provider === "local") {
-                    const provider = config.provider === "vault" ? "vault" : "plain-text"
+                    const provider = config.provider === "vault" ? "vault" : "plain-text";
                     withdrawPrompt = {
                         provider,
                         path: config.path || undefined,
