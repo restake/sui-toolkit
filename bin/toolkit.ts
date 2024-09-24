@@ -157,24 +157,21 @@ await new Command()
 
         if (typeof options.config === "string") {
             try {
-                const configPath = options.config;
-                const rawConfig = await Deno.readTextFile(configPath);
-                const parsedYaml = parseYaml(rawConfig);
-                const config = ConfigSchema.parse(parsedYaml);
+                const config = await Deno.readTextFile(options.config).then((raw) => ConfigSchema.parse(parseYaml(raw)));
 
-                if (config.provider === "vault" || config.provider === "local") {
-                    const provider = config.provider === "vault" ? "vault" : "plain-text";
-                    withdrawPrompt = {
-                        provider,
-                        path: config.path || undefined,
-                        key: config.key || undefined,
-                        keypair: config.value || undefined,
-                        encoding: config.encoding,
-                    };
-                } else {
-                    console.error(`Config provider not supported`);
-                    return;
-                }
+                withdrawPrompt = config.provider === "vault" ? {
+                    provider: "vault",
+                    path: config.path,
+                    key: config.key,
+                    keypair: undefined,
+                    encoding: config.encoding,
+                } : {
+                    provider: "plain-text",
+                    path: undefined,
+                    key: undefined,
+                    keypair: config.value,
+                    encoding: config.encoding,
+                };
             } catch (err) {
                 if (err instanceof ZodError) {
                     throw new Error(`Validation error: ${err.message}`);
