@@ -7,7 +7,7 @@
         "@mysten/sui": "npm:@mysten/sui@1.8.0",
         "@std/async": "jsr:@std/async@1.0.5",
         "@std/yaml": "jsr:@std/yaml@1.0.5",
-        "cliffy/": "https://deno.land/x/cliffy@v1.0.0-rc.2/",
+        "cliffy/": "https://deno.land/x/cliffy@v1.0.0-rc.4/",
         "vault": "https://raw.githubusercontent.com/restake/deno-hashicorp-vault/736c347329a2fea0946745df96d39f6f4e894e50/mod.ts",
         "zod": "https://deno.land/x/zod@v3.21.4/mod.ts"
     }
