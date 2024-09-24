@@ -1,4 +1,4 @@
-import { Ed25519Keypair } from "@mysten/sui.js";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { createKVReadResponse, VAULT_AUTH_TYPE, VaultClient, VaultTokenCredentials } from "vault";
 
 import config from "./config.ts";
@@ -17,7 +17,7 @@ const client = new VaultClient({
     authentication,
 });
 
-export const getKeypair = async (path: string, key: string, isBase64Encoded: boolean): Promise<Ed25519Keypair> => {
+export const getKeypair = async (path: string, key: string, encoding: string): Promise<Ed25519Keypair> => {
     // We currently use environment variables for authentication.
     try {
         await client.login();
@@ -42,6 +42,6 @@ export const getKeypair = async (path: string, key: string, isBase64Encoded: boo
     }
 
     return Ed25519Keypair.fromSecretKey(
-        decodeKeypair(keyData.data.data[key], isBase64Encoded),
+        decodeKeypair(keyData.data.data[key], encoding),
     );
 };
