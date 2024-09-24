@@ -10,10 +10,10 @@ import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdraw
 import { ConfigSchema } from "../types.ts";
 
 type Prompt = {
-    provider: "vault" | "plain-text";
+    provider: "vault" | "local";
     path: string | undefined;
     key: string | undefined;
-    keypair: string | undefined;
+    value: string | undefined;
     encoding: string;
 };
 
@@ -24,7 +24,7 @@ type VaultPrompt = Prompt & {
 };
 
 type PlaintextPrompt = Prompt & {
-    provider: "plain-text";
+    provider: "local";
     keypair: string;
 };
 
@@ -48,7 +48,7 @@ function isVaultPrompt(p: Prompt): p is VaultPrompt {
 }
 
 function isPlaintextPrompt(p: Prompt): p is PlaintextPrompt {
-    return p.provider === "plain-text";
+    return p.provider === "local";
 }
 
 const getSigner = async (prompt: Prompt): Promise<Ed25519Keypair> => {
@@ -57,7 +57,7 @@ const getSigner = async (prompt: Prompt): Promise<Ed25519Keypair> => {
     if (isVaultPrompt(prompt)) {
         keypair = await getKeypair(prompt.path!, prompt.key!, prompt.encoding);
     } else if (isPlaintextPrompt(prompt)) {
-        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.keypair!, prompt.encoding));
+        keypair = Ed25519Keypair.fromSecretKey(decodeKeypair(prompt.value!, prompt.encoding));
     } else {
         throw new Error(`Unsupported provider: ${prompt.provider}`);
     }
@@ -97,7 +97,7 @@ const getPrompt = <T>(): Promise<T> => {
             message: "Select validator key provider",
             options: [
                 { name: "HashiCorp Vault", value: "vault" },
-                { name: "Plain-text base64 encoded keypair", value: "plain-text" },
+                { name: "Plain-text base64 encoded keypair", value: "local" },
             ],
         },
         {
@@ -124,7 +124,7 @@ const getPrompt = <T>(): Promise<T> => {
             type: Secret,
             message: "Enter base64 encoded keypair",
             before: async ({ provider }, next) => {
-                if (provider === "plain-text") {
+                if (provider === "local") {
                     await next();
                 }
             },
@@ -151,27 +151,14 @@ await new Command()
             provider: "vault",
             path: undefined,
             key: undefined,
-            keypair: undefined,
+            value: undefined,
             encoding: "base64",
         };
 
         if (typeof options.config === "string") {
             try {
                 const config = await Deno.readTextFile(options.config).then((raw) => ConfigSchema.parse(parseYaml(raw)));
-
-                withdrawPrompt = config.provider === "vault" ? {
-                    provider: "vault",
-                    path: config.path,
-                    key: config.key,
-                    keypair: undefined,
-                    encoding: config.encoding,
-                } : {
-                    provider: "plain-text",
-                    path: undefined,
-                    key: undefined,
-                    keypair: config.value,
-                    encoding: config.encoding,
-                };
+                Object.assign(withdrawPrompt, config);
             } catch (err) {
                 if (err instanceof ZodError) {
                     throw new Error(`Validation error: ${err.message}`);
