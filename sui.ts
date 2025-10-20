@@ -154,3 +154,19 @@ export const updateCommissionRate = async (
         });
     }
 };
+
+export const getAccountGasObjects = async (address: string) => {
+    const { data } = await client.getOwnedObjects({
+        owner: address,
+        filter: {
+            MatchAll: [{
+                StructType: "0x2::coin::Coin<0x2::sui::SUI>"
+            }]
+        },
+        options: {
+            showContent: true
+        }
+    });
+
+    return data;
+};

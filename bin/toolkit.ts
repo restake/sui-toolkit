@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 
 import { getKeypair } from "../vault.ts";
 import { decodeKeypair } from "../utils.ts";
-import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects } from "../sui.ts";
+import { sendSuiObjects, updateCommissionRate, updateReferenceGasPrice, withdrawStakeObjects, getAccountGasObjects } from "../sui.ts";
 import { ConfigSchema } from "../types.ts";
 
 type Prompt = {
@@ -89,6 +89,12 @@ const updateCommission = async (prompt: CommissionPrompt) => {
     console.log(tx);
 };
 
+const checkGas = async (address: string) => {
+    const gasObjects = await getAccountGasObjects(address);
+    console.log("Gas objects for address:", address);
+    console.log(JSON.stringify(gasObjects, null, 2));
+};
+
 const getPrompt = <T>(): Promise<T> => {
     return prompt([
         {
@@ -159,11 +165,11 @@ await new Command()
             try {
                 const config = await Deno.readTextFile(options.config).then((raw) => ConfigSchema.parse(parseYaml(raw)));
                 Object.assign(withdrawPrompt, config);
-            } catch (err) {
+            } catch (err: unknown) {
                 if (err instanceof ZodError) {
                     throw new Error(`Validation error: ${err.message}`);
                 }
-                console.error(`Error loading config file: ${err.message}`);
+                console.error(`Error loading config file: ${err instanceof Error ? err.message : String(err)}`);
                 return;
             }
         } else {
@@ -184,10 +190,34 @@ await new Command()
     .command("send", "Send Sui to a given address")
     .arguments("<amount:number> <recipient:string>")
     .action(async (options, amount, recipient) => {
-        const sendPrompt = await getPrompt<SendPrompt>();
-        sendPrompt.amount = amount;
-        sendPrompt.recipient = recipient;
-        sendPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
+        let sendPrompt: SendPrompt = {
+            provider: "vault",
+            path: undefined,
+            key: undefined,
+            value: undefined,
+            encoding: "base64",
+            amount,
+            recipient,
+        };
+
+        if (typeof options.config === "string") {
+            try {
+                const config = await Deno.readTextFile(options.config).then((raw) => ConfigSchema.parse(parseYaml(raw)));
+                Object.assign(sendPrompt, config);
+            } catch (err: unknown) {
+                if (err instanceof ZodError) {
+                    throw new Error(`Validation error: ${err.message}`);
+                }
+                console.error(`Error loading config file: ${err instanceof Error ? err.message : String(err)}`);
+                return;
+            }
+        } else {
+            sendPrompt = await getPrompt<SendPrompt>();
+            sendPrompt.amount = amount;
+            sendPrompt.recipient = recipient;
+            sendPrompt.encoding = options.base64 ? "doubleBase64" : "base64";
+        }
+
         const { confirmation } = await prompt([
             {
                 name: "confirmation",
@@ -230,5 +260,10 @@ await new Command()
             commissionPrompt.validator = String(options.validator);
         }
         await updateCommission(commissionPrompt);
+    })
+    .command("check-gas", "Check gas objects for the account")
+    .arguments("<address:string>")
+    .action(async (options, address) => {
+        await checkGas(address);
     })
     .parse(Deno.args);
